@@ -7,11 +7,17 @@
 
 import SwiftUI
 import MapKit
+import CoreLocation
 
 struct Place: Identifiable {
     let id: String
     let name: String
     let coordinate: CLLocationCoordinate2D
+}
+
+struct Card: Hashable{
+    let id: Int
+    let color: Color
 }
 
 struct ContentView: View {
@@ -21,10 +27,21 @@ struct ContentView: View {
     @State private var offset = CGSize.zero
     
     @State private var selectedItem: MapFeature?
-
+    
+    var list = [
+        Card(id: 0, color: .red),
+        Card(id: 1, color: .blue),
+        Card(id: 2, color: .pink),
+        Card(id: 3, color: .green),
+        Card(id: 4, color: .indigo)]
+    
+    @StateObject var locationDataManager = LocationDataManager()
+    
+    @State private var position: MapCameraPosition = .userLocation(fallback: .automatic)
+    
     var body: some View {
         VStack {
-            Spacer()
+            
             if(isCamera){
                 RoundedRectangle(cornerRadius: /*@START_MENU_TOKEN@*/25.0/*@END_MENU_TOKEN@*/)
                     .fill(.ultraThickMaterial)
@@ -45,8 +62,9 @@ struct ContentView: View {
                     )
             }
             else if(isLocation){
+                Spacer(minLength: 50)
                 Text(selectedItem?.title ?? "select")
-                Map(selection: $selectedItem){
+                Map(initialPosition: position, selection: $selectedItem){
                     UserAnnotation()
                 }
                     .padding(.vertical, 30)
@@ -54,6 +72,46 @@ struct ContentView: View {
                         RoundedRectangle(cornerRadius: /*@START_MENU_TOKEN@*/25.0/*@END_MENU_TOKEN@*/)
                             .fill(.ultraThickMaterial)
                     )
+
+            }
+            else{
+                ScrollView{
+                    Spacer(minLength: 50)
+                    HStack{
+                        Spacer()
+                        Button(action: {
+                            
+                        }, label: {
+                            Circle()
+                                .frame(height: 45)
+                        })
+                        
+                    }
+                    .padding(.horizontal, 30)
+                    .padding(.vertical, 15)
+                    ZStack{
+                        ForEach(list, id: \.self) { temp in
+                            RoundedRectangle(cornerRadius: /*@START_MENU_TOKEN@*/25.0/*@END_MENU_TOKEN@*/)
+                                .fill(temp.color)
+                                .aspectRatio(0.631, contentMode: .fit)
+                                .offset(y: CGFloat(temp.id) * 60)
+                                .padding(.horizontal, 25)
+                        }
+                    }
+                    .frame(height: 155*CGFloat(list.count), alignment: .top)
+                    
+//                    RoundedRectangle(cornerRadius: /*@START_MENU_TOKEN@*/25.0/*@END_MENU_TOKEN@*/)
+//                        .aspectRatio(0.631, contentMode: /*@START_MENU_TOKEN@*/.fill/*@END_MENU_TOKEN@*/)
+                    Button(action: {
+                        
+                    }, label: {
+                        Image(systemName: "plus.circle.fill")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 50)
+                            .padding()
+                    })
+                }
                 
             }
             HStack{
@@ -90,7 +148,8 @@ struct ContentView: View {
                     
             )
         }
-        .padding()
+        .padding(.vertical, 10.0)
+        .ignoresSafeArea(edges: .vertical)
     }
 }
 
