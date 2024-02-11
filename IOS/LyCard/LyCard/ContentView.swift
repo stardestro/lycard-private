@@ -93,12 +93,12 @@ struct ContentView: View {
                         ForEach(list, id: \.self) { temp in
                             RoundedRectangle(cornerRadius: /*@START_MENU_TOKEN@*/25.0/*@END_MENU_TOKEN@*/)
                                 .fill(temp.color)
-                                .aspectRatio(0.631, contentMode: .fit)
+                                .aspectRatio(1.586, contentMode: .fit) // vertical aspect = 0.631, horizontal = 1.586
                                 .offset(y: CGFloat(temp.id) * 60)
                                 .padding(.horizontal, 25)
                         }
                     }
-                    .frame(height: 155*CGFloat(list.count), alignment: .top)
+                    .frame(height: 90*CGFloat(list.count), alignment: .top)
                     
 //                    RoundedRectangle(cornerRadius: /*@START_MENU_TOKEN@*/25.0/*@END_MENU_TOKEN@*/)
 //                        .aspectRatio(0.631, contentMode: /*@START_MENU_TOKEN@*/.fill/*@END_MENU_TOKEN@*/)
@@ -145,10 +145,11 @@ struct ContentView: View {
             .background(
                 RoundedRectangle(cornerRadius: /*@START_MENU_TOKEN@*/25.0/*@END_MENU_TOKEN@*/)
                     .fill(.secondary)
+                    .padding(.horizontal, 15)
                     
             )
         }
-        .padding(.vertical, 10.0)
+        .padding(.bottom, 35.0)
         .ignoresSafeArea(edges: .vertical)
     }
 }
