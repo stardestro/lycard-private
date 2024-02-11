@@ -46,7 +46,7 @@ const getBestCard = async (category) => {
   let maxVal = 0;
   let bestCard = null;
   const cat = getBestCategory(category);
-  console.log(staticData.records)
+  console.log(staticData.records, process.env.KINTONE_APIKEY, cat)
 
   // for (const record of staticData.records) {
   //   // Convert value to a number for comparison, since JSON values are strings
