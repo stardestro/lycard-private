@@ -55,13 +55,13 @@ export const metadata: Metadata = {
 		icon: [
 			{
 				media: "(prefers-color-scheme: light)",
-				url: "/images/favicon-light.png",
-				href: "/images/favicon-light.png",
+				url: "/lycard.png",
+				href: "/lycard.png",
 			},
 			{
 				media: "(prefers-color-scheme: dark)",
-				url: "/images/favicon-dark.png",
-				href: "/images/favicon-dark.png",
+				url: "/lycard.png",
+				href: "/lycard.png",
 			},
 		],
 	},

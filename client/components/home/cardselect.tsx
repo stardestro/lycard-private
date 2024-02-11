@@ -67,7 +67,7 @@ export default function CardSelect({ children, className = "", props }: CardSele
 							)}
 						>
 							<span>View Cards</span>
-							<Icons.create className="fill-slate-500 w-5 h-5" />
+							<Icons.creditcard className="fill-slate-500 w-5 h-5" />
 						</Link>
 					</div>
 				</div>

@@ -59,8 +59,7 @@ const getBestCard = async (category) => {
 
   return bestCard ? {
     name: bestCard.name.value,
-    value: maxVal,
-    image: bestCard.image.value
+    percent: maxVal,
   } : null;
 };
 
