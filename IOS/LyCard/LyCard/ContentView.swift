@@ -9,6 +9,7 @@
 import SwiftUI
 import MapKit
 import CoreLocation
+import PhotosUI
 
 struct Place: Identifiable {
     let id: String
@@ -16,25 +17,41 @@ struct Place: Identifiable {
     let coordinate: CLLocationCoordinate2D
 }
 
-struct Card: Hashable{
-    let id: Int
-    let color: Color
+struct Card: Codable, Identifiable {
+    let id: String
+    let name: String
+    let image: String
+    let gas: Double
+    let shopping: Double
+    let restaurant: Double
+    let travel: Double
 }
 
 struct ContentView: View {
     @State public var search: String = ""
+    @State public var savedsearch: String = ""
     @State public var isCamera: Bool = false
-    @State public var isLocation: Bool = true
+    @State public var isLocation: Bool = false
     @State private var offset = CGSize.zero
     
     @State private var selectedItem: MapFeature?
     
-    var list = [
-        Card(id: 0, color: .red),
-        Card(id: 1, color: .blue),
-        Card(id: 2, color: .pink),
-        Card(id: 3, color: .green),
-        Card(id: 4, color: .indigo)]
+    @State private var cards = [Card]()
+    
+    func loadData() async {
+
+        guard let url = Bundle.main.url(forResource: "data", withExtension: "json")
+        else {
+            print("json file not found")
+            return
+        }
+        
+        let data = try? Data(contentsOf: url)
+        cards = try! JSONDecoder().decode([Card].self, from: data!)
+        
+    }
+    
+    
     
     @StateObject var locationDataManager = LocationDataManager()
     
@@ -54,7 +71,7 @@ struct ContentView: View {
     
     @State var lastTime: DispatchTime = DispatchTime.now()
     
-//    @Binding public var mappy: MapCameraPosition = MapCameraPosition
+    let timer = Timer.publish(every: 1.3, on: .main, in: .common).autoconnect()
     
     @State private var showCamera = false
     @State private var selectedImage: UIImage?
@@ -64,8 +81,14 @@ struct ContentView: View {
             ZStack {
                 VStack{
                     if(isCamera){
-                        DocumentScannerView()
-                            .padding(.bottom, 80)
+                        Button("Open camera") {
+                            self.showCamera.toggle()
+                        }
+                        .fullScreenCover(isPresented: self.$showCamera) {
+                            accessCameraView(selectedImage: self.$selectedImage)
+                        }
+//                        DocumentScannerView()
+//                            .padding(.bottom, 80)
                     }
                     else if(isLocation){
                         ZStack(alignment: .top) {
@@ -131,17 +154,30 @@ struct ContentView: View {
                                 
                             }
                             .padding(.horizontal, 30)
-                            .padding(.vertical, 15)
+//                            .padding(.vertical, 15)
                             ZStack{
-                                ForEach(list, id: \.self) { temp in
-                                    RoundedRectangle(cornerRadius: /*@START_MENU_TOKEN@*/25.0/*@END_MENU_TOKEN@*/)
-                                        .fill(temp.color)
-                                        .aspectRatio(1.586, contentMode: .fit) // vertical aspect = 0.631, horizontal = 1.586
-                                        .offset(y: CGFloat(temp.id) * 60)
-                                        .padding(.horizontal, 25)
+                                ForEach(0..<cards.count, id: \.self) { index in
+//                                ForEach(cards) { temp in
+//                                    Text(temp.name)
+//                                    RoundedRectangle(cornerRadius: /*@START_MENU_TOKEN@*/25.0/*@END_MENU_TOKEN@*/)
+//                                        .fill(AsyncImage(url: URL(string: temp.image))
+                                    AsyncImage(url: URL(string: cards[index].image)) { image in
+                                        image
+                                            .resizable()
+                                            .scaledToFit()
+                                    } placeholder: {
+                                        ProgressView()
+                                    }.padding(25)
+//                                        .aspectRatio(1.586, contentMode: .fit) // vertical aspect = 0.631, horizontal = 1.586
+                                        .offset(y: CGFloat(index * 60))
                                 }
                             }
-                            .frame(height: 90*CGFloat(list.count), alignment: .top)
+                            .onAppear(){
+                                Task {
+                                    await loadData()
+                                }
+                            }
+                            .frame(height: 70*CGFloat(cards.count), alignment: .top)
                             
                             Button(action: {
                                 
@@ -196,7 +232,9 @@ struct ContentView: View {
                             TextField(
                                 "Search",
                                 text: $search
+                                
                             )
+                            .autocorrectionDisabled()      
                             .focused($searchFocused)
                             .frame(width: 200)
                             .font(.system(size: 30))
@@ -229,7 +267,7 @@ struct ContentView: View {
                         RoundedRectangle(cornerRadius: 25.0)
                         
                         //                    .frame(width: /*@START_MENU_TOKEN@*/100/*@END_MENU_TOKEN@*/)
-                            .fill(.secondary)
+                            .fill(.ultraThickMaterial)
                             .frame(height: 60)
                         //                    .padding()
                     )
@@ -238,24 +276,30 @@ struct ContentView: View {
                 }
                 
             }
-            .onChange(of: search) { oldValue, newValue in
-                countOfChange = countOfChange + 1
-                let currenTime = DispatchTime.now()
-                let difference = currenTime.uptimeNanoseconds - lastTime.uptimeNanoseconds
-                lastTime = currenTime
-                let elapsedTimeInMilliSeconds = Double(difference) / 1_000_000.0
-                if(elapsedTimeInMilliSeconds > 1300 || countOfChange > 2){
-                    performSearch(newValue)
-                    countOfChange = 0
+            .onReceive(timer, perform: { _ in
+                if(savedsearch != search){
+                    performSearch(search)
+                    savedsearch = search
                 }
-            }
+            })
+//            .onChange(of: search) { oldValue, newValue in
+//                countOfChange = countOfChange + 1
+//                let currenTime = DispatchTime.now()
+//                let difference = currenTime.uptimeNanoseconds - lastTime.uptimeNanoseconds
+//                lastTime = currenTime
+//                let elapsedTimeInMilliSeconds = Double(difference) / 1_000_000.0
+//                if(elapsedTimeInMilliSeconds > 1300 || countOfChange > 1){
+//                    performSearch(newValue)
+//                    countOfChange = 0
+//                }
+//            }
         }
     func performSearch(_ terms: String) {
             print("Search \(terms)")
             let request = MKLocalSearch.Request()
             request.naturalLanguageQuery = terms
             request.resultTypes = .pointOfInterest
-            
+        request.region = MKCoordinateRegion(center: locationDataManager.currentLocation ?? CLLocationCoordinate2D(latitude: 35.1987162, longitude: -97.4474712), span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05))
             let search = MKLocalSearch(request: request)
             search.start { response, error in
                 guard let response = response else {
@@ -267,6 +311,42 @@ struct ContentView: View {
         }
 }
 
+struct accessCameraView: UIViewControllerRepresentable {
+    
+    @Binding var selectedImage: UIImage?
+    @Environment(\.presentationMode) var isPresented
+    
+    func makeUIViewController(context: Context) -> UIImagePickerController {
+        let imagePicker = UIImagePickerController()
+        imagePicker.sourceType = .camera
+        imagePicker.allowsEditing = true
+        imagePicker.delegate = context.coordinator
+        return imagePicker
+    }
+    
+    func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {
+        
+    }
+
+    func makeCoordinator() -> Coordinator {
+        return Coordinator(picker: self)
+    }
+}
+
+// Coordinator will help to preview the selected image in the View.
+class Coordinator: NSObject, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
+    var picker: accessCameraView
+    
+    init(picker: accessCameraView) {
+        self.picker = picker
+    }
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        guard let selectedImage = info[.originalImage] as? UIImage else { return }
+        self.picker.selectedImage = selectedImage
+        self.picker.isPresented.wrappedValue.dismiss()
+    }
+}
 
 #Preview {
     ContentView()
