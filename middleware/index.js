@@ -7,7 +7,7 @@ const getBestCard = require('./models/bestcard')
 require('dotenv').config()
 
 const app = express();
-const port = process.env.PORT | 3009;
+const port = process.env.PORT | 7123;
 
 // Create Sequelize instance
 const sequelize = new Sequelize({
