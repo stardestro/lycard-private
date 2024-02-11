@@ -59,13 +59,16 @@ export default function CardSelect({ children, className = "", props }: CardSele
 								provided.
 							</p>
 						</div>
-						<Button
-							variant="default"
-							className="inline-flex justify-center items-center gap-2 whitespace-nowrap rounded-lg bg-slate-200 dark:bg-slate-800 hover:bg-slate-50 hover:dark:bg-slate-900 border border-slate-200 dark:border-slate-700 px-3 py-1.5 text-sm font-medium text-slate-800 dark:text-slate-300 focus-visible:outline-none focus-visible:ring focus-visible:ring-indigo-300 dark:focus-visible:ring-slate-600 transition-colors duration-150"
+						<Link
+							href="/cards"
+							className={cn(
+								buttonVariants({ variant: "default" }),
+								"inline-flex justify-center items-center gap-2 whitespace-nowrap rounded-lg bg-slate-200 dark:bg-slate-800 hover:bg-slate-50 hover:dark:bg-slate-900 border border-slate-200 dark:border-slate-700 px-3 py-1.5 text-sm font-medium text-slate-800 dark:text-slate-300 focus-visible:outline-none focus-visible:ring focus-visible:ring-indigo-300 dark:focus-visible:ring-slate-600 transition-colors duration-150"
+							)}
 						>
 							<span>View Cards</span>
-							<Icons.create className="fill-slate-500 w-5 h-5" />
-						</Button>
+							<Icons.creditcard className="fill-slate-500 w-5 h-5" />
+						</Link>
 					</div>
 				</div>
 			</SpotlightCard>
@@ -93,7 +96,7 @@ export default function CardSelect({ children, className = "", props }: CardSele
 							</p>
 						</div>
 						<Link
-							href="/bingo/create"
+							href="/search"
 							className={cn(
 								buttonVariants({ variant: "default" }),
 								"inline-flex justify-center items-center gap-2 whitespace-nowrap rounded-lg bg-slate-200 dark:bg-slate-800 hover:bg-slate-50 hover:dark:bg-slate-900 border border-slate-200 dark:border-slate-700 px-3 py-1.5 text-sm font-medium text-slate-800 dark:text-slate-300 focus-visible:outline-none focus-visible:ring focus-visible:ring-indigo-300 dark:focus-visible:ring-slate-600 transition-colors duration-150"
