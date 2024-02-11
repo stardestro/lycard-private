@@ -23,7 +23,7 @@ struct Card: Hashable{
 struct ContentView: View {
     @State public var search: String = ""
     @State public var isCamera: Bool = false
-    @State public var isLocation: Bool = false
+    @State public var isLocation: Bool = true
     @State private var offset = CGSize.zero
     
     @State private var selectedItem: MapFeature?
@@ -38,40 +38,63 @@ struct ContentView: View {
     @StateObject var locationDataManager = LocationDataManager()
     
     @State private var position: MapCameraPosition = .userLocation(fallback: .automatic)
+
+    
+    @State private var showCamera = false
+    @State private var selectedImage: UIImage?
+    @State var image: UIImage?
     
     var body: some View {
         VStack {
             
             if(isCamera){
-                RoundedRectangle(cornerRadius: /*@START_MENU_TOKEN@*/25.0/*@END_MENU_TOKEN@*/)
-                    .fill(.ultraThickMaterial)
-                    .rotationEffect(.degrees(Double(offset.width / 5)))
-                    .offset(x: offset.width * 1, y: 0)
-                    .gesture(
-                        DragGesture()
-                            .onChanged { gesture in
-                                offset = gesture.translation
-                            }
-                            .onEnded { _ in
-                                if abs(offset.width) > 100 {
-                                    // remove the card
-                                } else {
-                                    offset = .zero
-                                }
-                            }
-                    )
+                DocumentScannerView()
             }
             else if(isLocation){
-                Spacer(minLength: 50)
-                Text(selectedItem?.title ?? "select")
-                Map(initialPosition: position, selection: $selectedItem){
-                    UserAnnotation()
-                }
-                    .padding(.vertical, 30)
-                    .background(
+                ZStack(alignment: .top) {
+                    Map(initialPosition: position, selection: $selectedItem){
+                        UserAnnotation()
+                    }
+//                        .padding(.vertical, 10)
+//                    VStack(alignment: .leading) {
+//                        Spacer(minLength: 1)
+                    ZStack{
+                        
                         RoundedRectangle(cornerRadius: /*@START_MENU_TOKEN@*/25.0/*@END_MENU_TOKEN@*/)
-                            .fill(.ultraThickMaterial)
-                    )
+                            .fill(.ultraThinMaterial)
+                            .frame(height: 125)
+                            .padding()
+                            
+                        HStack {
+                            selectedItem?.image
+                                .background(
+                                    RoundedRectangle(cornerRadius: /*@START_MENU_TOKEN@*/25.0/*@END_MENU_TOKEN@*/)
+                                        .fill(selectedItem?.backgroundColor ?? .clear)
+                                )
+//                                .padding(.trailing, 50)
+                            Text(selectedItem?.title ?? "Select a Buisness")
+                        }
+                        
+                        
+                            
+                    }
+                    .padding(.top, 50)
+//                    Text(selectedItem?.title ?? "select")
+//                        .background(
+//                            RoundedRectangle(cornerRadius: /*@START_MENU_TOKEN@*/25.0/*@END_MENU_TOKEN@*/)
+//                                .fill(.pink)
+//                                .frame(height: 100)
+//                        )
+                        
+//                        Spacer()
+//                        Spacer()
+//                    }
+                }
+                
+//                    .background(
+//                        RoundedRectangle(cornerRadius: /*@START_MENU_TOKEN@*/25.0/*@END_MENU_TOKEN@*/)
+//                            .fill(.ultraThickMaterial)
+//                    )
 
             }
             else{
@@ -114,9 +137,9 @@ struct ContentView: View {
                 }
                 
             }
+            // HoverBar
             HStack{
-                Spacer()
-                
+                Spacer(minLength: 10)
                 Button {
                     isLocation = !isLocation
                     isCamera = false
@@ -124,13 +147,21 @@ struct ContentView: View {
                     Image(systemName: "mappin.and.ellipse")
                         .resizable()
                         .scaledToFit()
-                        .frame(width: 30)
+                        .frame(width: 30, height: 30)
+                        .foregroundStyle(.pink, .black)
                 }
-
-                TextField(
-                    "Search",
-                    text: $search
-                ).frame(width: 250)
+                ZStack{
+                    RoundedRectangle(cornerRadius: 24, style: .circular)
+                        .fill(Color(uiColor: .systemGray4))
+                        .frame(height: 55)
+                    TextField(
+                        "Search",
+                        text: $search
+                    )
+                    .frame(width: 200)
+                    .font(.system(size: 30))
+                }
+                
                 Button {
                     isCamera = !isCamera
                     isLocation = false
@@ -138,21 +169,63 @@ struct ContentView: View {
                     Image(systemName: "camera")
                         .resizable()
                         .scaledToFit()
-                        .frame(width: 30)
+                        .frame(width: 30, height: 20)
+                        .foregroundStyle(.pink, .black)
                 }
-                Spacer()
+                Spacer(minLength: 15)
             }
             .background(
-                RoundedRectangle(cornerRadius: /*@START_MENU_TOKEN@*/25.0/*@END_MENU_TOKEN@*/)
+                RoundedRectangle(cornerRadius: 25.0)
+                
+//                    .frame(width: /*@START_MENU_TOKEN@*/100/*@END_MENU_TOKEN@*/)
                     .fill(.secondary)
-                    .padding(.horizontal, 15)
-                    
+                    .frame(height: 60)
+//                    .padding()
             )
+            .padding()
         }
         .padding(.bottom, 35.0)
         .ignoresSafeArea(edges: .vertical)
     }
 }
+
+
+//    struct accessCameraView: UIViewControllerRepresentable {
+//        
+//        @Binding var selectedImage: UIImage?
+//        @Environment(\.presentationMode) var isPresented
+//        
+//        func makeUIViewController(context: Context) -> UIImagePickerController {
+//            let imagePicker = UIImagePickerController()
+//            imagePicker.sourceType = .camera
+//            imagePicker.allowsEditing = false
+//            imagePicker.delegate = context.coordinator
+//            return imagePicker
+//        }
+//        
+//        func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {
+//            
+//        }
+//
+//        func makeCoordinator() -> Coordinator {
+//            return Coordinator(picker: self)
+//        }
+//    }
+//
+//    // Coordinator will help to preview the selected image in the View.
+//    class Coordinator: NSObject, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
+//        var picker: accessCameraView
+//        
+//        init(picker: accessCameraView) {
+//            self.picker = picker
+//        }
+//        
+//        func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+//            guard let selectedImage = info[.originalImage] as? UIImage else { return }
+//            self.picker.selectedImage = selectedImage
+//            self.picker.isPresented.wrappedValue.dismiss()
+//        }
+//    }
 
 #Preview {
     ContentView()
