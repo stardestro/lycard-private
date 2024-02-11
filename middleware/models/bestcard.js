@@ -1,4 +1,6 @@
 const getBestCategory = async (subcategory) => {
+  subcategory = subcategory.replace(/^mkpoicategory/, '');
+
   const categoryMap = {
     bakery: 'restaurant',
     brewery: 'restaurant',
