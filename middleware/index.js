@@ -1,9 +1,12 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const { Sequelize, Model, DataTypes } = require('sequelize');
+const getloc = require('./models/vision')
+
+require('dotenv').config()
 
 const app = express();
-const port = process.env.PORT | 3003;
+const port = process.env.PORT | 3009;
 
 // Create Sequelize instance
 const sequelize = new Sequelize({
@@ -16,7 +19,7 @@ class User extends Model {}
 User.init({
   name: DataTypes.STRING,
   email: DataTypes.STRING,
-  password: DataTypes.STRING
+  password: DataTypes.STRING,
 }, { sequelize, modelName: 'user' });
 
 // Sync models with database
@@ -25,6 +28,12 @@ sequelize.sync();
 // Middleware for parsing request body
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
+// Process Image
+app.get('/processlocation', async (req, res) => {
+  // only execute if received base64 image. parse base64 image and send to vision model
+  res.json(await getloc(req.query.image))
+})
 
 // CRUD routes for User model
 app.get('/users', async (req, res) => {
