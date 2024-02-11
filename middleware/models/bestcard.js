@@ -48,15 +48,15 @@ const getBestCard = async (category) => {
   const cat = getBestCategory(category);
   console.log(staticData.records)
 
-  for (const record of staticData.records) {
-    // Convert value to a number for comparison, since JSON values are strings
-    const value = parseFloat(record[await cat]?.value || '0');
+  // for (const record of staticData.records) {
+  //   // Convert value to a number for comparison, since JSON values are strings
+  //   const value = parseFloat(record[await cat]?.value || '0');
 
-    if (value > maxVal) {
-      maxVal = value;
-      bestCard = record;
-    }
-  }
+  //   if (value > maxVal) {
+  //     maxVal = value;
+  //     bestCard = record;
+  //   }
+  // }
 
   return bestCard ? {
     name: bestCard.name.value,
