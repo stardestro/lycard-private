@@ -17,6 +17,11 @@ struct Place: Identifiable {
     let coordinate: CLLocationCoordinate2D
 }
 
+struct response: Codable {
+    let name: String
+    let percent: Double
+}
+
 struct Card: Codable, Identifiable {
     let id: String
     let name: String
@@ -58,6 +63,8 @@ struct ContentView: View {
     @State private var position: MapCameraPosition = .userLocation(fallback: .region(MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 35.1987162, longitude: -97.4474712), latitudinalMeters: 50, longitudinalMeters: 50)))
     
 //    @State private var currentSpan: MKCoordinateSpan
+    
+    @State private var apiResult: String = ""
 
     @FocusState private var searchFocused: Bool
     
@@ -71,16 +78,60 @@ struct ContentView: View {
     
     @State var lastTime: DispatchTime = DispatchTime.now()
     
+    @State var actualResponse: response = response(name: "", percent: 0)
+    
     let timer = Timer.publish(every: 1.3, on: .main, in: .common).autoconnect()
     
     @State private var showCamera = false
     @State private var selectedImage: UIImage?
     @State var image: UIImage?
     
+    @State var cardToPresent: String = ""
+    
+    private func fetchData() {
+        print("fetching Data")
+        //Parse URL
+        let value = String("https://lycard-production.up.railway.app/bestcard?category=")
+        print(value)
+        let valueFinal = selectedItem?.pointOfInterestCategory?.rawValue.lowercased()
+        print(valueFinal)
+        if(valueFinal == nil || valueFinal == "null"){
+            return
+        }
+        let combined = value + valueFinal!
+        print(combined)
+        guard let url = URL(string: combined) else { return }
+        
+        URLSession.shared.dataTask(with: url) { data, wowresponse, error in
+            if let data = data {
+                print(wowresponse)
+                print(data)
+//                cardToPresent = String(data: data, encoding: .utf8)!
+//                JSONDecoder().decode(<#T##type: Decodable.Protocol##Decodable.Protocol#>, from: <#T##Data#>)
+//                print(cardToPresent)
+//                if(cardToPresent != nil){
+                    actualResponse = try! JSONDecoder().decode(response.self, from: data)
+    //                actualResponse = try! JSONDecoder().decode([response.self, from: data)
+                    print(actualResponse)
+//                }
+                
+            } else if let error = error {
+                //Print API call error
+                print("Error fetching data: \(error.localizedDescription)")
+            }
+        }.resume()
+        
+    }
+    
     var body: some View {
             ZStack {
                 VStack{
                     if(isCamera){
+                        if let selectedImage{
+                            Image(uiImage: selectedImage)
+                                .resizable()
+                                .scaledToFit()
+                        }
                         Button("Open camera") {
                             self.showCamera.toggle()
                         }
@@ -106,7 +157,7 @@ struct ContentView: View {
                                 HStack {
                                     selectedItem?.image
                                         .background(
-                                            RoundedRectangle(cornerRadius: /*@START_MENU_TOKEN@*/25.0/*@END_MENU_TOKEN@*/)
+                                            RoundedRectangle(cornerRadius: 25.0)
                                                 .fill(selectedItem?.backgroundColor ?? .clear)
                                                 .frame(alignment: .trailing)
                                         )
@@ -118,14 +169,39 @@ struct ContentView: View {
                                             .fixedSize(horizontal: true, vertical: false)
                                         if(selectedItem != nil){
                                             HStack{
-                                                Text("Chase saphhire")
+                                                
+//                                                Text(cards[cards.firstIndex( where: { Card in
+//                                                    return Card.id == "citi-double-cash-card"
+//                                                })!].name)
+                                                Text(actualResponse.name)
                                                     .font(.system(size: 15))
                                                     .frame(width: 150, height: 20, alignment: .leading)
-                                                Text("2-5%")
+                                                Text( String(actualResponse.percent) + "%" )
                                                     .font(.system(size: 15))
                                                     .frame(width: 50, height: 20)
+                                            
+                                            }
+                                                .onChange(of: selectedItem, initial: true) { oldValue, newValue in
+                                                
+                                                Task{
+                                                    fetchData()
+                                                }
+                                                
+//                                                Task {
+//                                                    let (data, _) = try await URLSession.shared.data(from: URL(string:"https://api.chucknorris.io/jokes/random" + String(selectedItem?.kind))!)
+//                                                    let decodedResponse = try? JSONDecoder().decode(apiResult.self, from: data)
+//                                                    apiResult = decodedResponse?.value ?? ""
+//                                                }
                                                 
                                             }
+//                                                Text("Chase saphhire")
+//                                                    .font(.system(size: 15))
+//                                                    .frame(width: 150, height: 20, alignment: .leading)
+//                                                Text("2-5%")
+//                                                    .font(.system(size: 15))
+//                                                    .frame(width: 50, height: 20)
+                                                
+                                            
                                         }
                                     }
                                     .frame(width: 230, height: /*@START_MENU_TOKEN@*/100/*@END_MENU_TOKEN@*/)
@@ -165,6 +241,7 @@ struct ContentView: View {
                                         image
                                             .resizable()
                                             .scaledToFit()
+                                            .clipShape(RoundedRectangle(cornerRadius: 10))
                                     } placeholder: {
                                         ProgressView()
                                     }.padding(25)
@@ -319,7 +396,7 @@ struct accessCameraView: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> UIImagePickerController {
         let imagePicker = UIImagePickerController()
         imagePicker.sourceType = .camera
-        imagePicker.allowsEditing = true
+        imagePicker.allowsEditing = false
         imagePicker.delegate = context.coordinator
         return imagePicker
     }
