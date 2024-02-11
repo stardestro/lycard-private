@@ -13,6 +13,7 @@ import CoreLocation
 class LocationDataManager : NSObject, ObservableObject, CLLocationManagerDelegate {
     var locationManager = CLLocationManager()
     @Published var authorizationStatus: CLAuthorizationStatus?
+    @Published var currentLocation: CLLocationCoordinate2D?
     
     override init() {
         super.init()
@@ -52,6 +53,9 @@ class LocationDataManager : NSObject, ObservableObject, CLLocationManagerDelegat
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         // Insert code to handle location updates
+        guard let locValue: CLLocationCoordinate2D = manager.location?.coordinate else { return }
+        currentLocation = locValue
+//            print("locations = \(locValue.latitude) \(locValue.longitude)")
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {

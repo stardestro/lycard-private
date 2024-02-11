@@ -3,7 +3,8 @@
 //  LyCard
 //
 //  Created by Hussain Alkatheri on 2/10/24.
-//
+//  https://www.reddit.com/r/swift/comments/iylnbl/perform_mklocalsearch_in_swiftui/
+
 
 import SwiftUI
 import MapKit
@@ -38,14 +39,22 @@ struct ContentView: View {
     @StateObject var locationDataManager = LocationDataManager()
     
     @State private var position: MapCameraPosition = .userLocation(fallback: .region(MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 35.1987162, longitude: -97.4474712), latitudinalMeters: 50, longitudinalMeters: 50)))
+    
+//    @State private var currentSpan: MKCoordinateSpan
 
     @FocusState private var searchFocused: Bool
+    
+    @State private var countOfChange: Int = 0
     
     @State var results:[MKMapItem] = []
     
 //    @State private var hoverEffect: Int = (searchFocused ?? 0 ? 0: 100) ?? 0
     
     @State private var hoverEffect: CGFloat = 0.0
+    
+    @State var lastTime: DispatchTime = DispatchTime.now()
+    
+//    @Binding public var mappy: MapCameraPosition = MapCameraPosition
     
     @State private var showCamera = false
     @State private var selectedImage: UIImage?
@@ -60,13 +69,10 @@ struct ContentView: View {
                     }
                     else if(isLocation){
                         ZStack(alignment: .top) {
-                            Map(initialPosition: position, selection: $selectedItem){
+                            Map(position: $position, selection: $selectedItem){
                                 UserAnnotation()
                             }
                             .ignoresSafeArea()
-                            //                        .padding(.vertical, 10)
-                            //                    VStack(alignment: .leading) {
-                            //                        Spacer(minLength: 1)
                             ZStack{
                                 
                                 RoundedRectangle(cornerRadius: /*@START_MENU_TOKEN@*/25.0/*@END_MENU_TOKEN@*/)
@@ -102,8 +108,6 @@ struct ContentView: View {
                                     .frame(width: 230, height: /*@START_MENU_TOKEN@*/100/*@END_MENU_TOKEN@*/)
                                     
                                 }
-                                
-                                
                                 
                             }
                             
@@ -158,6 +162,12 @@ struct ContentView: View {
                         .onTapGesture {
                             searchFocused = false
                         }
+                    VStack{
+                        ForEach(self.results, id: \.self) { item in
+                            Text("\(item.name ?? "Test")").foregroundColor(.black)
+                        }
+                    }
+                    
                 }
 //                .onTapGesture {
 //                    if(searchFocused){
@@ -228,8 +238,34 @@ struct ContentView: View {
                 }
                 
             }
+            .onChange(of: search) { oldValue, newValue in
+                countOfChange = countOfChange + 1
+                let currenTime = DispatchTime.now()
+                let difference = currenTime.uptimeNanoseconds - lastTime.uptimeNanoseconds
+                lastTime = currenTime
+                let elapsedTimeInMilliSeconds = Double(difference) / 1_000_000.0
+                if(elapsedTimeInMilliSeconds > 1300 || countOfChange > 2){
+                    performSearch(newValue)
+                    countOfChange = 0
+                }
+            }
         }
-    }
+    func performSearch(_ terms: String) {
+            print("Search \(terms)")
+            let request = MKLocalSearch.Request()
+            request.naturalLanguageQuery = terms
+            request.resultTypes = .pointOfInterest
+            
+            let search = MKLocalSearch(request: request)
+            search.start { response, error in
+                guard let response = response else {
+                    print("There was an error searching for: \(String(describing: request.naturalLanguageQuery)) error: \(String(describing: error))")
+                    return
+                }
+                self.results = response.mapItems
+            }
+        }
+}
 
 
 #Preview {
