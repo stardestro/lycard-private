@@ -37,195 +37,200 @@ struct ContentView: View {
     
     @StateObject var locationDataManager = LocationDataManager()
     
-    @State private var position: MapCameraPosition = .userLocation(fallback: .automatic)
+    @State private var position: MapCameraPosition = .userLocation(fallback: .region(MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 35.1987162, longitude: -97.4474712), latitudinalMeters: 50, longitudinalMeters: 50)))
 
+    @FocusState private var searchFocused: Bool
+    
+    @State var results:[MKMapItem] = []
+    
+//    @State private var hoverEffect: Int = (searchFocused ?? 0 ? 0: 100) ?? 0
+    
+    @State private var hoverEffect: CGFloat = 0.0
     
     @State private var showCamera = false
     @State private var selectedImage: UIImage?
     @State var image: UIImage?
     
     var body: some View {
-        VStack {
-            
-            if(isCamera){
-                DocumentScannerView()
-            }
-            else if(isLocation){
-                ZStack(alignment: .top) {
-                    Map(initialPosition: position, selection: $selectedItem){
-                        UserAnnotation()
+            ZStack {
+                VStack{
+                    if(isCamera){
+                        DocumentScannerView()
+                            .padding(.bottom, 80)
                     }
-//                        .padding(.vertical, 10)
-//                    VStack(alignment: .leading) {
-//                        Spacer(minLength: 1)
-                    ZStack{
-                        
-                        RoundedRectangle(cornerRadius: /*@START_MENU_TOKEN@*/25.0/*@END_MENU_TOKEN@*/)
-                            .fill(.ultraThinMaterial)
-                            .frame(height: 125)
-                            .padding()
+                    else if(isLocation){
+                        ZStack(alignment: .top) {
+                            Map(initialPosition: position, selection: $selectedItem){
+                                UserAnnotation()
+                            }
+                            .ignoresSafeArea()
+                            //                        .padding(.vertical, 10)
+                            //                    VStack(alignment: .leading) {
+                            //                        Spacer(minLength: 1)
+                            ZStack{
+                                
+                                RoundedRectangle(cornerRadius: /*@START_MENU_TOKEN@*/25.0/*@END_MENU_TOKEN@*/)
+                                    .fill(.ultraThinMaterial)
+                                    .frame(height: 125)
+                                    .padding()
+                                
+                                HStack {
+                                    selectedItem?.image
+                                        .background(
+                                            RoundedRectangle(cornerRadius: /*@START_MENU_TOKEN@*/25.0/*@END_MENU_TOKEN@*/)
+                                                .fill(selectedItem?.backgroundColor ?? .clear)
+                                                .frame(alignment: .trailing)
+                                        )
+                                        .padding(.horizontal, 6)
+                                    VStack{
+                                        Text(selectedItem?.title ?? "Select a Business")
+                                            .frame(width: 210, height: 75, alignment: .leading)
+                                            .font(.system(size: 25))
+                                            .fixedSize(horizontal: true, vertical: false)
+                                        if(selectedItem != nil){
+                                            HStack{
+                                                Text("Chase saphhire")
+                                                    .font(.system(size: 15))
+                                                    .frame(width: 150, height: 20, alignment: .leading)
+                                                Text("2-5%")
+                                                    .font(.system(size: 15))
+                                                    .frame(width: 50, height: 20)
+                                                
+                                            }
+                                        }
+                                    }
+                                    .frame(width: 230, height: /*@START_MENU_TOKEN@*/100/*@END_MENU_TOKEN@*/)
+                                    
+                                }
+                                
+                                
+                                
+                            }
                             
-                        HStack {
-                            selectedItem?.image
-                                .background(
+                        }
+                        
+                    }
+                    else{
+                        ScrollView{
+                            Spacer(minLength: 50)
+                            HStack{
+                                Spacer()
+                                Button(action: {
+                                    
+                                }, label: {
+                                    //                            Circle()
+                                    Image("imageicon")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(height: 45)
+                                })
+                                
+                            }
+                            .padding(.horizontal, 30)
+                            .padding(.vertical, 15)
+                            ZStack{
+                                ForEach(list, id: \.self) { temp in
                                     RoundedRectangle(cornerRadius: /*@START_MENU_TOKEN@*/25.0/*@END_MENU_TOKEN@*/)
-                                        .fill(selectedItem?.backgroundColor ?? .clear)
-                                )
-//                                .padding(.trailing, 50)
-                            Text(selectedItem?.title ?? "Select a Buisness")
+                                        .fill(temp.color)
+                                        .aspectRatio(1.586, contentMode: .fit) // vertical aspect = 0.631, horizontal = 1.586
+                                        .offset(y: CGFloat(temp.id) * 60)
+                                        .padding(.horizontal, 25)
+                                }
+                            }
+                            .frame(height: 90*CGFloat(list.count), alignment: .top)
+                            
+                            Button(action: {
+                                
+                            }, label: {
+                                Image(systemName: "plus.circle.fill")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 50)
+                                    .padding()
+                            })
                         }
                         
-                        
-                            
                     }
-                    .padding(.top, 50)
-//                    Text(selectedItem?.title ?? "select")
-//                        .background(
-//                            RoundedRectangle(cornerRadius: /*@START_MENU_TOKEN@*/25.0/*@END_MENU_TOKEN@*/)
-//                                .fill(.pink)
-//                                .frame(height: 100)
-//                        )
-                        
-//                        Spacer()
-//                        Spacer()
+                }
+                if(searchFocused){
+                    Color.clear
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            searchFocused = false
+                        }
+                }
+//                .onTapGesture {
+//                    if(searchFocused){
+//                        searchFocused = false
 //                    }
-                }
-                
-//                    .background(
-//                        RoundedRectangle(cornerRadius: /*@START_MENU_TOKEN@*/25.0/*@END_MENU_TOKEN@*/)
-//                            .fill(.ultraThickMaterial)
-//                    )
-
-            }
-            else{
-                ScrollView{
-                    Spacer(minLength: 50)
+//                }
+                // HoverBar
+                VStack{
+                    Spacer()
                     HStack{
-                        Spacer()
-                        Button(action: {
-                            
-                        }, label: {
-                            Circle()
-                                .frame(height: 45)
-                        })
-                        
-                    }
-                    .padding(.horizontal, 30)
-                    .padding(.vertical, 15)
-                    ZStack{
-                        ForEach(list, id: \.self) { temp in
-                            RoundedRectangle(cornerRadius: /*@START_MENU_TOKEN@*/25.0/*@END_MENU_TOKEN@*/)
-                                .fill(temp.color)
-                                .aspectRatio(1.586, contentMode: .fit) // vertical aspect = 0.631, horizontal = 1.586
-                                .offset(y: CGFloat(temp.id) * 60)
-                                .padding(.horizontal, 25)
+                        Spacer(minLength: 10)
+                        Button {
+                            isLocation = !isLocation
+                            isCamera = false
+                        } label: {
+                            Image(systemName: "mappin.and.ellipse")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 40, height: 35)
+                                .foregroundStyle(.pink, .black)
                         }
-                    }
-                    .frame(height: 90*CGFloat(list.count), alignment: .top)
-                    
-//                    RoundedRectangle(cornerRadius: /*@START_MENU_TOKEN@*/25.0/*@END_MENU_TOKEN@*/)
-//                        .aspectRatio(0.631, contentMode: /*@START_MENU_TOKEN@*/.fill/*@END_MENU_TOKEN@*/)
-                    Button(action: {
+                        ZStack{
+                            RoundedRectangle(cornerRadius: 24, style: .circular)
+                                .fill(Color(uiColor: .systemGray4))
+                                .frame(height: 55)
+                            TextField(
+                                "Search",
+                                text: $search
+                            )
+                            .focused($searchFocused)
+                            .frame(width: 200)
+                            .font(.system(size: 30))
+                            
+                            //                    .onChange(of: searchFocused) { oldValue, newValue in
+                            //                        if(searchFocused){
+                            //                            withAnimation(.easeIn(duration: 0.05)) { hoverEffect = -265.0 }
+                            //                        }
+                            //                        else{
+                            //                            withAnimation(.spring(duration: 1)) { hoverEffect = 0.0 }
+                            //                        }
+                            //                    }
+                        }
                         
-                    }, label: {
-                        Image(systemName: "plus.circle.fill")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 50)
-                            .padding()
-                    })
-                }
-                
-            }
-            // HoverBar
-            HStack{
-                Spacer(minLength: 10)
-                Button {
-                    isLocation = !isLocation
-                    isCamera = false
-                } label: {
-                    Image(systemName: "mappin.and.ellipse")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 30, height: 30)
-                        .foregroundStyle(.pink, .black)
-                }
-                ZStack{
-                    RoundedRectangle(cornerRadius: 24, style: .circular)
-                        .fill(Color(uiColor: .systemGray4))
-                        .frame(height: 55)
-                    TextField(
-                        "Search",
-                        text: $search
+                        Button {
+                            isCamera = !isCamera
+                            isLocation = false
+                        } label: {
+                            Image(systemName: "camera")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 35, height: 25)
+                                .foregroundStyle(.pink, .black)
+                        }
+                        Spacer(minLength: 15)
+                    }
+                    .frame(alignment: .bottom)
+                    .ignoresSafeArea(.all)
+                    .background(
+                        RoundedRectangle(cornerRadius: 25.0)
+                        
+                        //                    .frame(width: /*@START_MENU_TOKEN@*/100/*@END_MENU_TOKEN@*/)
+                            .fill(.secondary)
+                            .frame(height: 60)
+                        //                    .padding()
                     )
-                    .frame(width: 200)
-                    .font(.system(size: 30))
+                    //            .offset(x: 0.0, y: hoverEffect)
+                    .padding()
                 }
                 
-                Button {
-                    isCamera = !isCamera
-                    isLocation = false
-                } label: {
-                    Image(systemName: "camera")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 30, height: 20)
-                        .foregroundStyle(.pink, .black)
-                }
-                Spacer(minLength: 15)
             }
-            .background(
-                RoundedRectangle(cornerRadius: 25.0)
-                
-//                    .frame(width: /*@START_MENU_TOKEN@*/100/*@END_MENU_TOKEN@*/)
-                    .fill(.secondary)
-                    .frame(height: 60)
-//                    .padding()
-            )
-            .padding()
         }
-        .padding(.bottom, 35.0)
-        .ignoresSafeArea(edges: .vertical)
     }
-}
 
-
-//    struct accessCameraView: UIViewControllerRepresentable {
-//        
-//        @Binding var selectedImage: UIImage?
-//        @Environment(\.presentationMode) var isPresented
-//        
-//        func makeUIViewController(context: Context) -> UIImagePickerController {
-//            let imagePicker = UIImagePickerController()
-//            imagePicker.sourceType = .camera
-//            imagePicker.allowsEditing = false
-//            imagePicker.delegate = context.coordinator
-//            return imagePicker
-//        }
-//        
-//        func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {
-//            
-//        }
-//
-//        func makeCoordinator() -> Coordinator {
-//            return Coordinator(picker: self)
-//        }
-//    }
-//
-//    // Coordinator will help to preview the selected image in the View.
-//    class Coordinator: NSObject, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
-//        var picker: accessCameraView
-//        
-//        init(picker: accessCameraView) {
-//            self.picker = picker
-//        }
-//        
-//        func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-//            guard let selectedImage = info[.originalImage] as? UIImage else { return }
-//            self.picker.selectedImage = selectedImage
-//            self.picker.isPresented.wrappedValue.dismiss()
-//        }
-//    }
 
 #Preview {
     ContentView()
