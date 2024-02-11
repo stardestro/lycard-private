@@ -14,7 +14,7 @@ export default async function CardsList() {
 
 
 	return <div className="mr-4 flex flex-row flex-wrap items-center justify-start">
-    {await staticData.map((card) => (
+    {/* {await staticData.map((card) => (
       <div className="card">
         <h2>{card.name}</h2>
         <p>{card.description}</p>
@@ -23,6 +23,6 @@ export default async function CardsList() {
         <p></p>
         <p></p>
       </div>
-    ))}
+    ))} */}
   </div>;
 }
