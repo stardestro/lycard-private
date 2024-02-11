@@ -30,6 +30,10 @@ const port = process.env.PORT;
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
+app.get('/', (req, res) => {
+  res.send('we up bois');
+});
+
 // Process Image
 app.get('/processlocation', async (req, res) => {
   res.json(await getloc(req.query.image))
