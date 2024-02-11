@@ -1,5 +1,7 @@
 import Image from "next/image";
 import * as React from "react";
+import { Icons } from "../icons";
+import { Button } from "../ui/button";
 
 
 export default function CardsList() {
@@ -469,15 +471,20 @@ export default function CardsList() {
   }
 
   return (
-    <div className="mr-4 flex flex-row flex-wrap items-center justify-start">
+    <div className="mr-4 flex flex-row flex-wrap self-stretch justify-center">
       {cards.records.map((card) => (
-        <div className="flex flex-col items-center justify-center p-4" key={card.name.value}>
+        <div className="flex flex-col items-center justify-center m-2 p-4 pb-2 bg-slate-600 bg-opacity-50 rounded-2xl" key={card.name.value}>
           <Image src={card.image.value} alt={card.name.value} className="w-48 h-32" width="192" height="192" />
-          <p className="text-lg font-bold">{card.name.value}</p>
-          <p>Restaurant: {card.restaurant.value}</p>
-          <p>Gas: {card.gas.value}</p>
-          <p>Shopping: {card.shopping_0.value}</p>
-          <p>Travel: {card.travel.value}</p>
+          <p className="text-lg font-bold max-w-72 text-center">{card.name.value}</p>
+          <div className="flex flex-row justify-center items-center gap-2">
+            <span className="flex flex-row items-center gap-2 bg-slate-800 bg-opacity-50 p-2 rounded-2xl"><Icons.food className="fill-slate-500 w-5 h-5"/> {card.restaurant.value}%</span>
+            <span className="flex flex-row items-center gap-2 bg-slate-800 bg-opacity-50 p-2 rounded-2xl"><Icons.gas className="fill-slate-500 w-5 h-5"/> {card.gas.value}%</span>
+            <span className="flex flex-row items-center gap-2 bg-slate-800 bg-opacity-50 p-2 rounded-2xl"><Icons.shopping className="fill-slate-500 w-5 h-5"/> {card.shopping_0.value}%</span>
+            <span className="flex flex-row items-center gap-2 bg-slate-800 bg-opacity-50 p-2 rounded-2xl"><Icons.travel className="fill-slate-500 w-5 h-5"/> {card.travel.value}%</span>
+          </div>
+          <Button className="mt-2">
+            More Info
+          </Button>
         </div>
       ))}
     </div>
