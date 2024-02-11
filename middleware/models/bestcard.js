@@ -62,7 +62,8 @@ const getBestCard = async (category) => {
   return bestCard ? {
     name: bestCard.name.value,
     percent: maxVal,
-  } : null;
+  } : {name: "Not valid merchant",
+    percent: 0};
 };
 
 module.exports = getBestCard;
