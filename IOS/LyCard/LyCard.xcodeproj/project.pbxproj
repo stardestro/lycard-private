@@ -13,6 +13,10 @@
 		28AA3BB02B77F6C800B2B604 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 28AA3BAF2B77F6C800B2B604 /* Preview Assets.xcassets */; };
 		28AA3BB92B77FE5700B2B604 /* HoverBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28AA3BB82B77FE5700B2B604 /* HoverBar.swift */; };
 		28AA3BBB2B78167F00B2B604 /* LocationDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28AA3BBA2B78167F00B2B604 /* LocationDataManager.swift */; };
+		28AA3BBE2B7853C900B2B604 /* DocumentScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28AA3BBD2B7853C900B2B604 /* DocumentScannerView.swift */; };
+		28AA3BC02B786A9800B2B604 /* FrameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28AA3BBF2B786A9800B2B604 /* FrameView.swift */; };
+		28AA3BC22B786AED00B2B604 /* CameraManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28AA3BC12B786AED00B2B604 /* CameraManager.swift */; };
+		28AA3BC82B78849B00B2B604 /* Save for late.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28AA3BC72B78849B00B2B604 /* Save for late.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -23,6 +27,11 @@
 		28AA3BAF2B77F6C800B2B604 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		28AA3BB82B77FE5700B2B604 /* HoverBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HoverBar.swift; sourceTree = "<group>"; };
 		28AA3BBA2B78167F00B2B604 /* LocationDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationDataManager.swift; sourceTree = "<group>"; };
+		28AA3BBC2B78508900B2B604 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		28AA3BBD2B7853C900B2B604 /* DocumentScannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentScannerView.swift; sourceTree = "<group>"; };
+		28AA3BBF2B786A9800B2B604 /* FrameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrameView.swift; sourceTree = "<group>"; };
+		28AA3BC12B786AED00B2B604 /* CameraManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraManager.swift; sourceTree = "<group>"; };
+		28AA3BC72B78849B00B2B604 /* Save for late.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Save for late.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -39,6 +48,10 @@
 		28AA3B9C2B77F6C600B2B604 = {
 			isa = PBXGroup;
 			children = (
+				28AA3BC72B78849B00B2B604 /* Save for late.swift */,
+				28AA3BC12B786AED00B2B604 /* CameraManager.swift */,
+				28AA3BBF2B786A9800B2B604 /* FrameView.swift */,
+				28AA3BBD2B7853C900B2B604 /* DocumentScannerView.swift */,
 				28AA3BBA2B78167F00B2B604 /* LocationDataManager.swift */,
 				28AA3BB82B77FE5700B2B604 /* HoverBar.swift */,
 				28AA3BA72B77F6C600B2B604 /* LyCard */,
@@ -57,6 +70,7 @@
 		28AA3BA72B77F6C600B2B604 /* LyCard */ = {
 			isa = PBXGroup;
 			children = (
+				28AA3BBC2B78508900B2B604 /* Info.plist */,
 				28AA3BA82B77F6C600B2B604 /* LyCardApp.swift */,
 				28AA3BAA2B77F6C600B2B604 /* ContentView.swift */,
 				28AA3BAC2B77F6C800B2B604 /* Assets.xcassets */,
@@ -143,9 +157,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				28AA3BC02B786A9800B2B604 /* FrameView.swift in Sources */,
+				28AA3BC22B786AED00B2B604 /* CameraManager.swift in Sources */,
+				28AA3BC82B78849B00B2B604 /* Save for late.swift in Sources */,
 				28AA3BAB2B77F6C600B2B604 /* ContentView.swift in Sources */,
 				28AA3BB92B77FE5700B2B604 /* HoverBar.swift in Sources */,
 				28AA3BBB2B78167F00B2B604 /* LocationDataManager.swift in Sources */,
+				28AA3BBE2B7853C900B2B604 /* DocumentScannerView.swift in Sources */,
 				28AA3BA92B77F6C600B2B604 /* LyCardApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -283,13 +301,14 @@
 				DEVELOPMENT_TEAM = PKN8DBN56P;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = LyCard/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "We need your camera to scan your enviroment";
 				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "We need your location to for the map";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "We need your location to for the map";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -317,13 +336,14 @@
 				DEVELOPMENT_TEAM = PKN8DBN56P;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = LyCard/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "We need your camera to scan your enviroment";
 				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "We need your location to for the map";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "We need your location to for the map";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
