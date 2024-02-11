@@ -1,15 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  swcMinify: true,
-  // Create a standalone folder which copies only the necessary files for production
   output: "standalone",
   images: {
     remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "loremflickr.com",
-        port: "",
-      },
       {
         protocol: "https",
         hostname: "avatars.githubusercontent.com",
@@ -24,13 +17,8 @@ const nextConfig = {
     return [
       {
         source: "/github",
-        destination: "https://github.com/lryanle/bingobongo",
+        destination: "https://github.com/lryanle/lycard",
         permanent: false,
-      },
-      {
-        source: '/settings',
-        destination: '/settings',
-        permanent: true,
       },
     ];
   },
